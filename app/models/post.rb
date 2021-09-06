@@ -1,16 +1,18 @@
 class Post < ActiveRecord::Base
 
+    validates :title, presence: true
     validates :content, length: { minimum: 250 }
     validates :summary, length: { maximum: 250 }
     validates :category, inclusion: { in: %w(Fiction Non-Fiction) }
-    
-    validate :title_exists, :non_clickbait
+    validate :non_clickbait
 
     def non_clickbait
-        if self.title.include? "Won't Believe" || "Secret" || "Top [number]" || "Guess"
-            
+        if self.title == nil
         else
-            errors.add(:title, "can't be non-clickbaity")
+          arr = ["Won't Believe", "Secret", "Top [number]", "Guess"]
+          unless arr.any? { |string| self.title.include?(string) }
+            self.errors.add :title, "#{self.title}"
+          end
         end
     end
 end
